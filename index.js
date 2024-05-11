@@ -30,6 +30,7 @@ async function run() {
 
 
     const fitnessCollection = client.db("fitnessServiceDB").collection("fitness");
+    const bookingCollection = client.db("fitnessServiceDB").collection("bookings");
 
 
     app.get('/fitness', async (req, res) => {
@@ -47,14 +48,59 @@ async function run() {
     })
 
 
-
     app.post('/fitness', async (req, res) => {
       const newFitness = req.body;
       const result = await fitnessCollection.insertOne(newFitness);
       res.send(result);
     })
 
+    app.get("/fitness/:email", async (req, res) => {
+      const result = await fitnessCollection.find({ email: req.params.email }).toArray();
+      res.send(result);
+    })
+    
+     // update operation
+     app.put('/fitnessUpdate/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updatedFit = req.body;
 
+      const fitTherapy = {
+        $set: {
+          service_name: updatedFit.service_name,
+          service_image: updatedFit.service_image,
+          service_price: updatedFit.service_price,
+          service_area: updatedFit.service_area,
+          service_description: updatedFit.service_description
+        }
+      }
+      const result = await fitnessCollection.updateOne(filter, fitTherapy, options);
+      res.send(result);
+    })
+
+    app.delete('/delete/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await fitnessCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    //booking
+    // app.get('/bookings/:email', async (req, res) => {
+    //   const email = req.params.email
+    //   const query = {'user.email':email};
+    //   const result = await bookingCollection.find(query).toArray();
+    //   res.send(result);
+    // })
+
+
+
+    app.post('/bookings', async (req, res) => {
+      const newBooking = req.body;
+      const result = await bookingCollection.insertOne(newBooking);
+      res.send(result);
+    })
 
 
 
