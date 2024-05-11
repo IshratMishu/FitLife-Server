@@ -54,10 +54,16 @@ async function run() {
       res.send(result);
     })
 
-    app.get("/fitness/:email", async (req, res) => {
-      const result = await fitnessCollection.find({ email: req.params.email }).toArray();
+    app.get('/fitness', async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+          query = { email: req.query.email }
+      }
+      const result = await fitnessCollection.find(query).toArray();
       res.send(result);
-    })
+  })
+    
+    
     
      // update operation
      app.put('/fitnessUpdate/:id', async (req, res) => {
@@ -87,13 +93,16 @@ async function run() {
     })
 
     //booking
-    // app.get('/bookings/:email', async (req, res) => {
-    //   const email = req.params.email
-    //   const query = {'user.email':email};
-    //   const result = await bookingCollection.find(query).toArray();
-    //   res.send(result);
-    // })
-
+    app.get('/bookings', async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+          query = { email: req.query.email }
+      }
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+  })
+    
+    
 
 
     app.post('/bookings', async (req, res) => {
