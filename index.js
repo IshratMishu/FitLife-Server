@@ -56,15 +56,15 @@ async function run() {
 
     app.get('/fitnesses/:email', async (req, res) => {
       const email = req.params.email;
-      const query = {'providerEmail':email};
+      const query = { 'providerEmail': email };
       const result = await fitnessCollection.find(query).toArray();
       res.send(result);
-  })
-    
-    
-    
-     // update operation
-     app.put('/fitnessUpdate/:id', async (req, res) => {
+    })
+
+
+
+    // update operation
+    app.put('/fitnessUpdate/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
       const options = { upsert: true };
@@ -91,14 +91,22 @@ async function run() {
     })
 
     //booking
-    app.get('/bookinges/:email', async (req, res) => {
+    app.get('/booked-service/:email', async (req, res) => {
       const email = req.params.email;
-      const query = {'user_email':email};
+      const query = { 'user_email': email };
       const result = await bookingCollection.find(query).toArray();
       res.send(result);
-  })
-    
-    
+    })
+
+
+    app.get('/serveToDo/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { 'providerEmail': email };
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+    })
+
+
 
 
     app.post('/bookings', async (req, res) => {
