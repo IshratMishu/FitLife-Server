@@ -107,23 +107,22 @@ async function run() {
     })
 
 
-
     app.post('/bookings', async (req, res) => {
       const newBooking = req.body;
       const result = await bookingCollection.insertOne(newBooking);
       res.send(result);
     })
 
-app.patch('/workingStatus/:id', async(req,res)=>{
-  const id = req.params.id;
-  const status = req.body;
-  const query = { _id: new ObjectId(id) };
-  const updateDoc = {
-    $set: status,
-  }
-  const result = await bookingCollection.updateOne(query, updateDoc);
-  res.send(result)
-})
+    app.patch('/workingStatus/:id', async (req, res) => {
+      const id = req.params.id;
+      const status = req.body;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: status,
+      }
+      const result = await bookingCollection.updateOne(query, updateDoc);
+      res.send(result)
+    })
 
 
     // Send a ping to confirm a successful connection
