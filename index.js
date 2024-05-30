@@ -31,7 +31,30 @@ async function run() {
 
     const fitnessCollection = client.db("fitnessServiceDB").collection("fitness");
     const bookingCollection = client.db("fitnessServiceDB").collection("bookings");
+    const favoritesCollection = client.db("fitnessServiceDB").collection("favorites");
 
+    app.post('/favorites', async (req, res) => {
+      const { userId, serviceId } = req.body;
+      const query = { userId, serviceId };
+      const update = { $set: { userId, serviceId } };
+      const options = { upsert: true };
+      const result = await favoritesCollection.updateOne(query, update, options);
+      res.send(result);
+    });
+  
+    app.get('/favorites/:userId', async (req, res) => {
+      const userId = req.params.userId;
+      const query = { userId };
+      const result = await favoritesCollection.find(query).toArray();
+      res.send(result);
+    });
+  
+    app.delete('/favorites', async (req, res) => {
+      const { userId, serviceId } = req.body;
+      const query = { userId, serviceId };
+      const result = await favoritesCollection.deleteOne(query);
+      res.send(result);
+    });
 
     app.get('/fitness', async (req, res) => {
       const cursor = fitnessCollection.find();
