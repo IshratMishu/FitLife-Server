@@ -32,28 +32,41 @@ async function run() {
     const fitnessCollection = client.db("fitnessServiceDB").collection("fitness");
     const bookingCollection = client.db("fitnessServiceDB").collection("bookings");
     const favoritesCollection = client.db("fitnessServiceDB").collection("favorites");
+    const favorites = [];
 
-    app.post('/favorites', async (req, res) => {
+    // POST route to add a favorite
+    app.post('/favorites', (req, res) => {
       const { userId, serviceId } = req.body;
-      const query = { userId, serviceId };
-      const update = { $set: { userId, serviceId } };
-      const options = { upsert: true };
-      const result = await favoritesCollection.updateOne(query, update, options);
-      res.send(result);
+      if (!userId || !serviceId) {
+        return res.status(400).json({ error: 'userId and serviceId are required' });
+      }
+    
+      const newFavorite = { userId, serviceId };
+      favorites.push(newFavorite);
+      res.status(201).json(newFavorite);
     });
-  
-    app.get('/favorites/:userId', async (req, res) => {
-      const userId = req.params.userId;
-      const query = { userId };
-      const result = await favoritesCollection.find(query).toArray();
-      res.send(result);
-    });
-  
-    app.delete('/favorites', async (req, res) => {
+    
+    // DELETE route to remove a favorite
+    app.delete('/favorites', (req, res) => {
       const { userId, serviceId } = req.body;
-      const query = { userId, serviceId };
-      const result = await favoritesCollection.deleteOne(query);
-      res.send(result);
+      if (!userId || !serviceId) {
+        return res.status(400).json({ error: 'userId and serviceId are required' });
+      }
+    
+      const index = favorites.findIndex(fav => fav.userId === userId && fav.serviceId === serviceId);
+      if (index === -1) {
+        return res.status(404).json({ error: 'Favorite not found' });
+      }
+    
+      favorites.splice(index, 1);
+      res.status(204).end();
+    });
+    
+    // GET route to fetch user favorites
+    app.get('/favorites/:userId', (req, res) => {
+      const { userId } = req.params;
+      const userFavorites = favorites.filter(fav => fav.userId === userId);
+      res.json(userFavorites);
     });
 
     app.get('/fitness', async (req, res) => {
