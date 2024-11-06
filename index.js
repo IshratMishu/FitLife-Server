@@ -31,43 +31,7 @@ async function run() {
 
     const fitnessCollection = client.db("fitnessServiceDB").collection("fitness");
     const bookingCollection = client.db("fitnessServiceDB").collection("bookings");
-    const favoritesCollection = client.db("fitnessServiceDB").collection("favorites");
-    const favorites = [];
 
-    // POST route to add a favorite
-    app.post('/favorites', (req, res) => {
-      const { userId, serviceId } = req.body;
-      if (!userId || !serviceId) {
-        return res.status(400).json({ error: 'userId and serviceId are required' });
-      }
-    
-      const newFavorite = { userId, serviceId };
-      favorites.push(newFavorite);
-      res.status(201).json(newFavorite);
-    });
-    
-    // DELETE route to remove a favorite
-    app.delete('/favorites', (req, res) => {
-      const { userId, serviceId } = req.body;
-      if (!userId || !serviceId) {
-        return res.status(400).json({ error: 'userId and serviceId are required' });
-      }
-    
-      const index = favorites.findIndex(fav => fav.userId === userId && fav.serviceId === serviceId);
-      if (index === -1) {
-        return res.status(404).json({ error: 'Favorite not found' });
-      }
-    
-      favorites.splice(index, 1);
-      res.status(204).end();
-    });
-    
-    // GET route to fetch user favorites
-    app.get('/favorites/:userId', (req, res) => {
-      const { userId } = req.params;
-      const userFavorites = favorites.filter(fav => fav.userId === userId);
-      res.json(userFavorites);
-    });
 
     app.get('/fitness', async (req, res) => {
       const cursor = fitnessCollection.find();
@@ -170,14 +134,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-
-
-
-
-
-
-
 
 
 
