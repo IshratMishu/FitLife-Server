@@ -32,10 +32,21 @@ async function run() {
     const fitnessCollection = client.db("fitnessServiceDB").collection("fitness");
     const bookingCollection = client.db("fitnessServiceDB").collection("bookings");
 
+    //pagination
+    app.get('/servicesCount', async (req, res) => {
+      const count = await fitnessCollection.estimatedDocumentCount();
+      res.send({ count });
+    })
 
+
+    //service 
     app.get('/fitness', async (req, res) => {
-      const cursor = fitnessCollection.find();
-      const result = await cursor.toArray();
+      const search = req.query.search;
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
+      const query = search ? { service_name: { $regex: search, $options: 'i' } } : {};
+      const cursor = fitnessCollection.find(query);
+      const result = await cursor.skip(page * size).limit(size).toArray();
       res.send(result);
     })
 
