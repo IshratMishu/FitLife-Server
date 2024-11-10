@@ -9,8 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
-
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASS}@cluster0.zzqeakj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 // console.log(uri);
 
@@ -31,6 +29,7 @@ async function run() {
 
     const fitnessCollection = client.db("fitnessServiceDB").collection("fitness");
     const bookingCollection = client.db("fitnessServiceDB").collection("bookings");
+
 
     //pagination
     app.get('/servicesCount', async (req, res) => {
@@ -120,8 +119,12 @@ async function run() {
 
     app.post('/bookings', async (req, res) => {
       const newBooking = req.body;
-      const result = await bookingCollection.insertOne(newBooking);
-      res.send(result);
+      const { user_email, providerEmail } = newBooking;
+      if (user_email !== providerEmail) {
+        const result = await bookingCollection.insertOne(newBooking);
+        res.send(result);
+      }
+
     })
 
     app.patch('/workingStatus/:id', async (req, res) => {
